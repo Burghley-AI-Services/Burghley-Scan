@@ -9,24 +9,42 @@ network calls, not even localhost" claim. See gui/app.py for the
 pywebview wiring and the js_api bridge this page talks to.
 """
 
+from gui.assets import LOGO_PNG_BASE64
+
 VERSION = "1.0.0-lite"
 
+# Colours and type pulled directly from the Burghley AI Services website's
+# design tokens (app/globals.css) so the free tool and the site read as
+# the same product. The site is dark-mode only, so this is too - no light
+# theme to fall back to. Sharp corners (no border-radius) match the site's
+# "no rounded corners" shape language; font stacks fall back to system
+# fonts if Epilogue/Inter/JetBrains Mono aren't installed locally, since
+# fetching webfonts would mean a network call.
 _STYLE = """
 :root {
     color-scheme: dark;
-    --bg: #0f1115;
-    --panel: #171a21;
-    --border: #262b36;
-    --text: #e8e8ea;
-    --muted: #9aa1b1;
-    --accent: #4f8cff;
-    --accent-dim: #2c3f66;
-    --danger: #ff6b6b;
+    --bg: #10141a;
+    --panel: #1c2026;
+    --panel-high: #262a31;
+    --border: #21262d;
+    --text: #dfe2eb;
+    --text-variant: #d4c4b7;
+    --muted: #8b949e;
+    --accent: #f2be8c;
+    --accent-fixed: #ffdcbd;
+    --accent-container: #d4a373;
+    --on-accent: #482904;
+    --accent-dim: #7d562d;
+    --danger: #ffb4ab;
+
+    --font-headline: 'Epilogue', 'Segoe UI Semibold', -apple-system, sans-serif;
+    --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: 'JetBrains Mono', Consolas, 'Courier New', monospace;
 }
 * { box-sizing: border-box; }
 body {
     margin: 0;
-    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: var(--font-body);
     background: var(--bg);
     color: var(--text);
     -webkit-user-select: none;
@@ -38,14 +56,14 @@ header {
     padding: 18px 24px;
     border-bottom: 1px solid var(--border);
 }
-header .brand { font-weight: 600; font-size: 16px; }
+header img.logo { height: 30px; width: auto; display: block; }
+header .brand { font-family: var(--font-headline); font-weight: 700; font-size: 17px; letter-spacing: 0.01em; }
 header .tagline { color: var(--muted); font-size: 13px; }
 main { padding: 24px; max-width: 900px; margin: 0 auto; }
 
 .panel {
     background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 10px;
     padding: 24px;
 }
 
@@ -53,25 +71,23 @@ main { padding: 24px; max-width: 900px; margin: 0 auto; }
 
 button {
     font: inherit;
-    background: var(--accent);
-    color: #08101f;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 18px;
     font-weight: 600;
+    background: var(--accent);
+    color: var(--on-accent);
+    border: none;
+    padding: 10px 18px;
     cursor: pointer;
 }
 button:disabled { background: var(--accent-dim); color: var(--muted); cursor: not-allowed; }
 button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
 
 .path-label {
-    font-family: Consolas, "Courier New", monospace;
+    font-family: var(--font-mono);
     font-size: 13px;
     color: var(--muted);
     padding: 8px 12px;
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 6px;
     flex: 1;
     min-width: 200px;
     overflow: hidden;
@@ -83,7 +99,7 @@ button.secondary { background: transparent; border: 1px solid var(--border); col
 #status.error { color: var(--danger); }
 
 #results { display: none; margin-top: 24px; }
-#results .meta { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+#results .meta { color: var(--muted); font-size: 13px; margin-bottom: 20px; font-family: var(--font-mono); }
 
 .card {
     display: grid;
@@ -96,9 +112,9 @@ button.secondary { background: transparent; border: 1px solid var(--border); col
 .card:last-child { border-bottom: none; }
 .card .label { font-size: 14px; }
 .card .label .desc { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
-.card .bar-track { background: var(--bg); border-radius: 4px; height: 10px; overflow: hidden; }
-.card .bar-fill { background: var(--accent); height: 100%; border-radius: 4px; transition: width 0.4s ease; }
-.card .count { text-align: right; font-weight: 700; font-size: 16px; }
+.card .bar-track { background: var(--bg); height: 10px; overflow: hidden; }
+.card .bar-fill { background: var(--accent); height: 100%; transition: width 0.4s ease; }
+.card .count { text-align: right; font-weight: 700; font-size: 16px; font-family: var(--font-headline); }
 
 #disclaimer {
     margin-top: 20px;
@@ -111,8 +127,7 @@ button.secondary { background: transparent; border: 1px solid var(--border); col
     margin-top: 24px;
     padding: 18px;
     border: 1px solid var(--accent-dim);
-    border-radius: 8px;
-    background: rgba(79, 140, 255, 0.08);
+    background: rgba(242, 190, 140, 0.08);
     font-size: 14px;
     line-height: 1.5;
 }
@@ -209,8 +224,9 @@ window.addEventListener('pywebviewready', () => {
 });
 """
 
-_BODY = """
+_BODY = f"""
 <header>
+    <img class="logo" src="data:image/png;base64,{LOGO_PNG_BASE64}" alt="Burghley AI Services">
     <div>
         <div class="brand">Burghley Scan</div>
         <div class="tagline">Free, offline scan for ungoverned AI-usage patterns</div>
