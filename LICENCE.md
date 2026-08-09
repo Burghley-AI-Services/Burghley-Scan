@@ -13,7 +13,7 @@ Version 1.0, August 2026
 - **"Source form"** means the software's source code, documentation, and associated files.
 - **"Executable form"** means compiled binaries or other derived forms of the software.
 - **"Contribution"** means any modification or addition to the Software, whether in Source or Executable form.
-- **"Change Date"** means [DATE - typically 4 years from initial release], after which this License converts to Apache License 2.0.
+- **"Change Date"** means August 2030, after which this License converts to Apache License 2.0.
 - **"Commercial Use"** means using or distributing the Software, or any Derivative Work, for the purpose of operating a competing audit, scanning, or code analysis service or product.
 
 ### 2. Grant of Rights
