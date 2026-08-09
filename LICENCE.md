@@ -13,7 +13,6 @@ Version 1.0, August 2026
 - **"Source form"** means the software's source code, documentation, and associated files.
 - **"Executable form"** means compiled binaries or other derived forms of the software.
 - **"Contribution"** means any modification or addition to the Software, whether in Source or Executable form.
-- **"Change Date"** means August 2030, after which this License converts to Apache License 2.0.
 - **"Commercial Use"** means using or distributing the Software, or any Derivative Work, for the purpose of operating a competing audit, scanning, or code analysis service or product.
 
 ### 2. Grant of Rights
@@ -57,26 +56,22 @@ The following uses are permitted without restriction:
 - Forking the repository for non-commercial modifications;
 - Distributing the Software internally within Your organisation for Your own auditing purposes.
 
-### 5. Conversion to Apache License 2.0
-
-On or after the Change Date, this License automatically converts to Apache License 2.0. From that point forward, all restrictions in Section 3 no longer apply, and the Software is available under the full terms of Apache 2.0.
-
-### 6. No Warranty
+### 5. No Warranty
 
 The Software is provided "as-is," without warranty of any kind, express or implied. The Licensor is not liable for any damages, including loss of data, lost profits, or business interruption, arising from the use or inability to use the Software.
 
-### 7. Limitation of Liability
+### 6. Limitation of Liability
 
 In no event shall the Licensor be liable for any direct, indirect, incidental, special, or consequential damages, even if advised of the possibility of such damages.
 
-### 8. Enforcement
+### 7. Enforcement
 
 If You breach Section 3, Your rights under this License terminate immediately. The Licensor may seek injunctive relief or damages for breaches.
 
-### 9. Termination
+### 8. Termination
 
 If You violate the terms of this License, it terminates automatically. Termination does not affect rights granted to others who received the Software from You in compliance with this License.
 
-### 10. Governing Law
+### 9. Governing Law
 
 This License is governed by the laws of England and Wales.
