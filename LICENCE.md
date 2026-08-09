@@ -20,25 +20,32 @@ Version 1.0, August 2026
 
 Subject to the restrictions in Section 3, Licensor grants You a worldwide, royalty-free, non-exclusive, right to:
 
-(a) View and inspect the Source form of the Software;
-(b) Reproduce the Software for Your own use;
-(c) Prepare Derivative Works for Your own internal use;
-(d) Execute the Software in Executable form on Your own machines;
-(e) Distribute copies of the Software or Derivative Works, provided:
-    - You comply with Section 3 (restrictions below);
-    - You include a copy of this License with every copy You distribute;
-    - You clearly mark any modifications You make;
-    - You retain all original copyright and license notices.
+<ol type="A">
+  <li>View and inspect the Source form of the Software;</li>
+  <li>Reproduce the Software for Your own use;</li>
+  <li>Prepare Derivative Works for Your own internal use;</li>
+  <li>Execute the Software in Executable form on Your own machines;</li>
+  <li>Distribute copies of the Software or Derivative Works, provided:</li>
+</ol>
+
+<ul>
+    <li>You comply with Section 3 (restrictions below);</li>
+    <li>You include a copy of this License with every copy You distribute;</li>
+    <li>You clearly mark any modifications You make;</li>
+    <li>You retain all original copyright and license notices.</li>
+</ul>
 
 ### 3. Restrictions
 
 You may NOT:
 
-(a) Use the Software or any Derivative Work for Commercial Use;
-(b) Sell, license, sublicense, or offer for sale the Software or any Derivative Work;
-(c) Represent the Software or a Derivative Work as Your own product;
-(d) Remove or alter any copyright, patent, trademark, or attribution notices;
-(e) Use the Licensor's name, logos, or trademarks without written permission (except to describe the origin of the Software as required).
+<ol type="A">
+  <li>Use the Software or any Derivative Work for Commercial Use;</li>
+  <li>Sell, license, sublicense, or offer for sale the Software or any Derivative Work;</li>
+  <li>Represent the Software or a Derivative Work as Your own product;</li>
+  <li>Remove or alter any copyright, patent, trademark, or attribution notices;</li>
+  <li>Use the Licensor's name, logos, or trademarks without written permission (except to describe the origin of the Software as required).</li>
+</ol>
 
 ### 4. Permitted Uses
 
