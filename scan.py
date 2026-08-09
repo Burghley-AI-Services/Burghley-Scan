@@ -470,6 +470,19 @@ def print_summary(summary):
     print("Nothing was uploaded or written to disk. This scan ran entirely on your machine.")
 
 
+def _pause_before_exit():
+    """Keep the console window open when the compiled exe was launched by
+    double-clicking it in Explorer rather than from an already-open
+    terminal - otherwise the window shows the results for a split second
+    and closes before anyone can read them."""
+    if not getattr(sys, "frozen", False):
+        return
+    try:
+        input("\nPress Enter to close...")
+    except (EOFError, OSError):
+        pass
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Burghley Scan (lite) - free, offline scan for ungoverned AI-usage patterns. "
@@ -484,9 +497,11 @@ def main():
         summary = run_scan(args.repo_path)
     except ValueError as e:
         print(e, file=sys.stderr)
+        _pause_before_exit()
         sys.exit(1)
 
     print_summary(summary)
+    _pause_before_exit()
 
 
 if __name__ == "__main__":
