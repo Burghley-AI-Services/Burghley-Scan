@@ -466,7 +466,7 @@ def print_summary(summary):
     print(f"Oversized files: {summary['oversized_file']}")
     print(f"Generic naming density: {summary['generic_naming_density']}")
     print()
-    print("These are correlation signals, not proof. See the README for how to read them.")
+    print("These are correlation signals, not proof. See RESULTS.md for what each count means.")
     print("Nothing was uploaded or written to disk. This scan ran entirely on your machine.")
 
 

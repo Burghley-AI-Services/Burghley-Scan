@@ -90,6 +90,8 @@ The counts are correlation signals, not proof. A high number of large commits wi
 
 The tool flags the pattern. You decide what it means for your codebase.
 
+For a breakdown of what each individual count means and what triggers it, see [RESULTS.md](RESULTS.md).
+
 ## Windows SmartScreen warning
 
 When you first run this on Windows, you may see a "Windows protected your PC" prompt. This is normal for new, unsigned software. Click "More info" and then "Run anyway" to proceed. The tool makes no network calls and poses no risk to your system.
