@@ -1,6 +1,7 @@
 # Understanding your scan results
 
-Burghley Scan (lite) prints five numbers. This page explains what each one
+Burghley Scan (lite) shows five numbers, whether you're looking at the
+dashboard or the `--cli` text output. This page explains what each one
 actually counts, and what it does and doesn't tell you. All of them are
 **correlation signals, not proof** - a high count means "worth a closer
 look," not "AI definitely did this, unreviewed."

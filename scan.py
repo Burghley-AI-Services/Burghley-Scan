@@ -483,18 +483,30 @@ def _pause_before_exit():
         pass
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Burghley Scan (lite) - free, offline scan for ungoverned AI-usage patterns. "
-                     "Prints aggregate category counts only. Nothing is uploaded, nothing is written to disk."
-    )
-    parser.add_argument("repo_path", nargs="?", default=".",
-                        help="Path to the repository to scan. Defaults to the current directory.")
-    parser.add_argument("--version", action="version", version=f"burghley-scan {VERSION}")
-    args = parser.parse_args()
-
+def _set_console_visible(visible: bool):
+    """Show/hide the console window behind the GUI. Only relevant for the
+    compiled exe on Windows - a plain `python scan.py` run keeps the
+    developer's own terminal untouched. A console app that also opens a
+    GUI window normally leaves a terminal flickering behind it, which
+    undermines the whole point of building a proper dashboard; --cli
+    mode never calls this, so scripting/CI use is unaffected."""
+    if not getattr(sys, "frozen", False) or sys.platform != "win32":
+        return
     try:
-        summary = run_scan(args.repo_path)
+        import ctypes
+        hwnd = ctypes.windll.kernel32.GetConsoleWindow()
+        if hwnd:
+            ctypes.windll.user32.ShowWindow(hwnd, 5 if visible else 0)  # SW_SHOW / SW_HIDE
+    except Exception:
+        pass
+
+
+def run_cli(repo_path_str):
+    """The original plain-text flow: run the scan, print the summary,
+    exit. Used for --cli, for scripting/CI, and as the fallback when the
+    GUI can't start (e.g. no WebView2 runtime on this machine)."""
+    try:
+        summary = run_scan(repo_path_str)
     except ValueError as e:
         print(e, file=sys.stderr)
         _pause_before_exit()
@@ -502,6 +514,35 @@ def main():
 
     print_summary(summary)
     _pause_before_exit()
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Burghley Scan (lite) - free, offline scan for ungoverned AI-usage patterns. "
+                     "Nothing is uploaded, nothing is written to disk."
+    )
+    parser.add_argument("repo_path", nargs="?", default=".",
+                        help="Path to the repository to scan. Defaults to the current directory. "
+                             "Ignored in GUI mode - pick the folder from the window instead.")
+    parser.add_argument("--cli", action="store_true",
+                        help="Print plain-text results instead of opening the GUI. "
+                             "Useful for scripting/CI.")
+    parser.add_argument("--version", action="version", version=f"burghley-scan {VERSION}")
+    args = parser.parse_args()
+
+    if args.cli:
+        run_cli(args.repo_path)
+        return
+
+    try:
+        from gui.app import launch_gui
+        _set_console_visible(False)
+        launch_gui(default_repo_path=args.repo_path)
+    except Exception as e:
+        _set_console_visible(True)
+        print(f"WARN: could not start the GUI ({e}). Falling back to plain-text output.", file=sys.stderr)
+        print("      Run with --cli to skip straight to this mode next time.", file=sys.stderr)
+        run_cli(args.repo_path)
 
 
 if __name__ == "__main__":

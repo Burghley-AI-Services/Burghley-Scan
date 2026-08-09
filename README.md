@@ -40,43 +40,57 @@ Or build from source:
 ```bash
 git clone https://github.com/Burghley-AI-Services/burghley-scan.git
 cd burghley-scan
+pip install -r requirements.txt
 python scan.py --help
 ```
 
 ## Usage
 
-### Basic scan of your current directory
+### GUI (default)
+
+Run the executable (or `python scan.py` from source) and a window opens:
+select the repository folder, click **Run scan**, and the results appear as
+a dashboard - category cards with a bar for each count, not a wall of text.
+Nothing is uploaded or sent anywhere; everything runs in that window, on
+your machine.
+
+### Command line (`--cli`)
+
+For scripting, CI, or if you just prefer a terminal:
 
 ```bash
-./burghley-scan
+./burghley-scan --cli /path/to/your/repo
 ```
 
-Or, pointing at a specific repository:
-
-```bash
-./burghley-scan /path/to/your/repo
 ```
-
-The tool will scan the git history and print a summary of findings to the screen. Nothing is uploaded or sent anywhere.
-
-### Output
-
-You'll see category counts like:
-
-```
-Scanned 340 files across 6 months of history
+Scanned 340 files touched across 22 commits over the last 30 days
 Large commits with no test changes: 6
 Untested files: 43
 Possible AI-usage signals: 8
 Oversized files: 2
+Generic naming density: 4
 ```
 
-That's it. The counts tell you whether there's a pattern worth investigating further.
+If the GUI can't start on your machine (for example, no WebView2 runtime -
+see below), the tool automatically falls back to this same plain-text
+output rather than failing silently.
+
+### A note on the GUI and "no network calls"
+
+The GUI is built on [pywebview](https://pywebview.flowrl.com/), which is
+capable of running a local HTTP server as one of its supported modes. This
+tool never uses that mode - the dashboard is loaded as a single self-contained
+HTML string, not from a served file or URL, so no server ever starts and no
+port ever opens. That means the old advice to "just grep the source for
+`socket`/`requests`/`urllib`" no longer proves the whole story on its own,
+since that capability now exists (unused) inside a dependency. If you want to
+verify it yourself: run a scan with your network adapter disabled, or watch
+for listening ports with `netstat` while it runs. Nothing will show up.
 
 ## What it does NOT do
 
 - **It doesn't check for secrets.** This is intentional - if a real exposed credential exists, you should know about it immediately, not have it withheld behind a paywall.
-- **It doesn't upload anything.** Every scan runs entirely offline on your machine. No internet connection required.
+- **It doesn't upload anything.** Every scan runs entirely offline on your machine. No internet connection required, no local server started either - see above.
 - **It doesn't produce a detailed report.** For that, check out [Burghley AI Services](https://burghley-ai-services.co.uk) for a full audit.
 
 ## How to read the results
