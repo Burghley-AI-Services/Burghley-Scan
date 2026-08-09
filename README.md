@@ -100,10 +100,6 @@ This software is licensed under the Burghley Business Source License. See [LICEN
 
 In short: you can inspect, run, and fork this tool. You cannot sell it or use it to build a competing product.
 
-## Contributing
-
-Found a bug? Have an improvement? Pull requests are welcome. By contributing, you agree that your changes are licensed under the same terms as the software.
-
 ## Support
 
 For questions or issues:
@@ -112,6 +108,6 @@ For questions or issues:
 
 ## About Burghley AI Services
 
-`burghley-scan` is built by [Burghley AI Services](https://burghley-ai-services.co.uk), an independent audit service that checks codebases for ungoverned AI usage.
+Burghley Scan is built by [Burghley AI Services](https://burghley-ai-services.co.uk), an independent audit service that checks codebases for ungoverned AI usage.
 
 This free tool is the entry point. If you find patterns worth investigating, we offer a full audit with detailed findings, actionable reporting, and team training.
