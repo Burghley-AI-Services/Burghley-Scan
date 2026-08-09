@@ -100,6 +100,11 @@ This software is licensed under the Burghley Business Source License. See [LICEN
 
 In short: you can inspect, run, and fork this tool. You cannot sell it or use it to build a competing product.
 
+## Contributions
+Bug reports are welcome. If you find an issue, feel free to open up a [**GitHub issue**](https://github.com/Burghley-AI-Services/Burghley-Scan/issues/new) or [**email us**](mailto:info@burghley-ai-services.co.uk). 
+
+This tool is already actively developed and managed by the Burghley AI Services team and as such PRs will not be accepted.
+
 ## Support
 
 For questions or issues:
