@@ -12,6 +12,10 @@ It looks through a codebase's git history for patterns that correlate with AI-ge
 
 It produces simple category counts, not full detail. Enough to see whether there's a real pattern worth looking into.
 
+Here's an example of what this scan can find:
+
+<img width="1135" height="912" alt="Screenshot of scan results for preview mode" src="https://github.com/user-attachments/assets/79e1d388-d124-4df2-a9ec-57d77f4bd7b7" />
+
 ## Want the full picture?
 
 This free tool shows you that there's a pattern. Our full audit will show you why there's a pattern, with:
@@ -22,6 +26,10 @@ This free tool shows you that there's a pattern. Our full audit will show you wh
 - Everything delivered as branded PDFs, nothing uploaded from your machine
 
 If this tool turns up something worth investigating, [**get in touch**](https://burghley-ai-services.co.uk/contact) and we'll walk you through a full audit process.
+
+Here's an example of what the of the full scan can find:
+
+<img width="1073" height="981" alt="Screenshot of scan results for full scan mode" src="https://github.com/user-attachments/assets/5e9413fa-8067-4110-b5a9-90d3b80e3f1b" />
 
 ## Installation
 
