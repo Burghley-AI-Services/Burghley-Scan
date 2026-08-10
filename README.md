@@ -27,23 +27,22 @@ This free tool shows you that there's a pattern. Our full audit will show you wh
 
 If this tool turns up something worth investigating, [**get in touch**](https://burghley-ai-services.co.uk/contact) and we'll walk you through a full audit process.
 
-Here's an example of what the of the full scan can find:
+Here's an example of what the full audit can find:
 
 <img width="1073" height="981" alt="Screenshot of scan results for full scan mode" src="https://github.com/user-attachments/assets/5e9413fa-8067-4110-b5a9-90d3b80e3f1b" />
 
 ## Installation
 
-### Requirements
+### Option A: download the .exe (recommended for most people)
 
-- Python 3.7 or later
-- Git (must be in your PATH)
-
-### Setup
+Requirements: **Git** (must be in your PATH). Nothing else - the .exe has Python bundled inside it, so you don't need Python installed at all.
 
 1. Download the latest executable from [**releases**](https://github.com/Burghley-AI-Services/burghley-scan/releases)
 2. No installation needed - just run it
 
-Or build from source:
+### Option B: build from source
+
+Requirements: **Python 3.8+** and **Git**, both on your PATH.
 
 ```bash
 git clone https://github.com/Burghley-AI-Services/burghley-scan.git
@@ -57,10 +56,12 @@ python scan.py --help
 ### GUI (default)
 
 Run the executable (or `python scan.py` from source) and a window opens:
-select the repository folder, click **Run scan**, and the results appear as
-a dashboard - category cards with a bar for each count, not a wall of text.
-Nothing is uploaded or sent anywhere; everything runs in that window, on
-your machine.
+select the repository folder - picking something that isn't a Git repo is
+caught immediately, not after you click Run - then click **Run scan**. A
+live counter tracks progress file-by-file, with a **Cancel** button if you
+want to stop partway through. Results appear as a dashboard - category
+cards with a bar for each count, not a wall of text. Nothing is uploaded or
+sent anywhere; everything runs in that window, on your machine.
 
 ### Command line (`--cli`)
 
@@ -77,6 +78,9 @@ Untested files: 43
 Possible AI-usage signals: 8
 Oversized files: 2
 Generic naming density: 4
+
+These are correlation signals, not proof. See RESULTS.md for what each count means.
+Nothing was uploaded or written to disk. This scan ran entirely on your machine.
 ```
 
 If the GUI can't start on your machine (for example, no WebView2 runtime -
