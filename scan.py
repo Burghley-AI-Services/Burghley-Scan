@@ -29,6 +29,12 @@ from pathlib import Path
 
 VERSION = "1.0.0-lite"
 
+
+class ScanCancelled(Exception):
+    """Raised when should_cancel() returns True at a checkpoint inside
+    run_scan()/scan_files(). Not an error - callers catch this and report
+    a cancelled scan, not a failure."""
+
 CODE_EXTENSIONS = {".py", ".js", ".ts", ".jsx", ".tsx", ".cs", ".java", ".go", ".rb", ".php"}
 EXCLUDE_DIRS = {".git", "node_modules", "bin", "obj", "dist", "build", ".venv", "venv", "__pycache__"}
 
@@ -309,9 +315,17 @@ def scan_commits(commits):
     return counts, touched_files
 
 
-def scan_files(repo: Path, rel_paths, tracked, test_index, js_deps, py_deps):
+def scan_files(repo: Path, rel_paths, tracked, test_index, js_deps, py_deps, on_progress=None, should_cancel=None):
     """File-content signals over the set of files touched within the scan
-    window. Returns aggregate counts only - no file paths in the output."""
+    window. Returns aggregate counts only - no file paths in the output.
+
+    on_progress(current, total), if given, is called once per candidate
+    file as the loop works through them - current is a 1-based count
+    against len(rel_paths), not against files_scanned, so it still
+    advances steadily even on files that get skipped below.
+
+    should_cancel(), if given, is checked at the top of each iteration;
+    raises ScanCancelled the moment it returns True."""
     counts = {
         "ai_signal_boilerplate_comment": 0,
         "ai_signal_hallucinated_dependency": 0,
@@ -320,8 +334,14 @@ def scan_files(repo: Path, rel_paths, tracked, test_index, js_deps, py_deps):
         "untested_file": 0,
     }
     files_scanned = 0
+    sorted_paths = sorted(rel_paths)
+    total_candidates = len(sorted_paths)
 
-    for rel_path in sorted(rel_paths):
+    for i, rel_path in enumerate(sorted_paths, start=1):
+        if should_cancel and should_cancel():
+            raise ScanCancelled()
+        if on_progress:
+            on_progress(i, total_candidates)
         path = repo / rel_path
         if not path.is_file() or not should_scan(path):
             continue
@@ -404,7 +424,22 @@ def _find_git_root(path: Path):
         return None
 
 
-def run_scan(repo_path_str="."):
+def check_repo(repo_path_str="."):
+    """Cheap validity check for a folder the user just picked, without
+    running a scan. Returns (ok, message) - message is either the
+    resolved absolute path (ok=True) or a human-readable reason (ok=False).
+    Lets the GUI catch an invalid folder the moment it's selected rather
+    than waiting for the user to click Run and read an error afterwards."""
+    repo = Path(repo_path_str).resolve()
+    if not repo.is_dir():
+        return False, f"{repo} is not a folder."
+    git_root = _find_git_root(repo)
+    if git_root is None:
+        return False, "This folder isn't a Git repository (or git isn't on your PATH)."
+    return True, str(git_root)
+
+
+def run_scan(repo_path_str=".", on_progress=None, should_cancel=None):
     repo = Path(repo_path_str).resolve()
     if not repo.is_dir():
         raise ValueError(f"Not a directory: {repo}")
@@ -434,7 +469,9 @@ def run_scan(repo_path_str="."):
     py_deps = load_python_dependencies(repo)
     test_index = build_test_subject_index(tracked)
 
-    file_counts, files_scanned = scan_files(repo, touched_files, tracked, test_index, js_deps, py_deps)
+    file_counts, files_scanned = scan_files(
+        repo, touched_files, tracked, test_index, js_deps, py_deps, on_progress, should_cancel
+    )
 
     ai_signal_total = (
         commit_counts["ai_signal_co_authored_trailer"]

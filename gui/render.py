@@ -94,9 +94,12 @@ button.secondary { background: transparent; border: 1px solid var(--border); col
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.path-label.invalid { color: var(--danger); border-color: var(--danger); }
 
-#status { margin-top: 16px; color: var(--muted); font-size: 14px; }
+#status { margin-top: 16px; color: var(--muted); font-size: 14px; display: none; align-items: center; gap: 10px; }
+#status.visible { display: flex; }
 #status.error { color: var(--danger); }
+#status.loading { color: var(--text); }
 
 #results { display: none; margin-top: 24px; }
 #results .meta { color: var(--muted); font-size: 13px; margin-bottom: 20px; font-family: var(--font-mono); }
@@ -159,43 +162,85 @@ const CATEGORIES = [
 ];
 
 let selectedPath = null;
+let scanInProgress = false;
 
-function setStatus(msg, isError) {
+window.updateScanProgress = function(current, total) {
+    if (!scanInProgress) return;
+    setStatus(`Scanning - ${current}/${total} files...`, 'loading');
+};
+
+function setStatus(msg, kind) {
+    // kind: 'error' | 'loading' | undefined (plain)
+    // The spinner is a persistent DOM node, shown/hidden but never
+    // recreated - replacing it (e.g. via innerHTML) on every progress
+    // tick restarts its CSS animation from 0deg each time, which is what
+    // made it look like it kept resetting instead of spinning smoothly.
     const el = document.getElementById('status');
-    el.textContent = msg || '';
-    el.className = isError ? 'error' : '';
+    document.getElementById('statusSpinner').style.display = kind === 'loading' ? 'inline-block' : 'none';
+    document.getElementById('statusText').textContent = msg || '';
+    const stateClass = kind === 'error' ? 'error' : (kind === 'loading' ? 'loading' : '');
+    el.className = (msg ? 'visible ' : '') + stateClass;
 }
 
 async function pickFolder() {
     setStatus('');
-    const path = await pywebview.api.pick_folder();
-    if (!path) return;
-    selectedPath = path;
-    document.getElementById('pathLabel').textContent = path;
-    document.getElementById('runBtn').disabled = false;
+    const picked = await pywebview.api.pick_folder();
+    if (!picked) return;
+    const pathLabel = document.getElementById('pathLabel');
+    pathLabel.textContent = picked.path;
     document.getElementById('results').style.display = 'none';
+
+    if (picked.ok) {
+        selectedPath = picked.path;
+        pathLabel.classList.remove('invalid');
+        document.getElementById('runBtn').disabled = false;
+        setStatus('');
+    } else {
+        selectedPath = null;
+        pathLabel.classList.add('invalid');
+        document.getElementById('runBtn').disabled = true;
+        setStatus(picked.message, 'error');
+    }
 }
 
 async function runScan() {
     if (!selectedPath) return;
     const runBtn = document.getElementById('runBtn');
+    const pickBtn = document.getElementById('pickBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
     runBtn.disabled = true;
-    setStatus('Scanning... this can take a moment on larger repos.');
+    pickBtn.disabled = true;
+    cancelBtn.style.display = 'inline-block';
+    cancelBtn.disabled = false;
+    scanInProgress = true;
+    setStatus('Scanning - this can take a moment on larger repos...', 'loading');
     document.getElementById('results').style.display = 'none';
 
     try {
         const summary = await pywebview.api.run_scan(selectedPath);
-        if (summary.error) {
-            setStatus(summary.error, true);
+        if (summary.cancelled) {
+            setStatus('Scan cancelled.');
+        } else if (summary.error) {
+            setStatus(summary.error, 'error');
         } else {
             setStatus('');
             renderResults(summary);
         }
     } catch (err) {
-        setStatus('Something went wrong running the scan: ' + err, true);
+        setStatus('Something went wrong running the scan: ' + err, 'error');
     } finally {
+        scanInProgress = false;
         runBtn.disabled = false;
+        pickBtn.disabled = false;
+        cancelBtn.style.display = 'none';
     }
+}
+
+async function cancelScan() {
+    const cancelBtn = document.getElementById('cancelBtn');
+    cancelBtn.disabled = true;
+    setStatus('Cancelling...', 'loading');
+    await pywebview.api.cancel_scan();
 }
 
 function renderResults(summary) {
@@ -238,8 +283,12 @@ _BODY = f"""
             <button id="pickBtn" onclick="pickFolder()" disabled>Select repository...</button>
             <div class="path-label" id="pathLabel">No folder selected</div>
             <button id="runBtn" class="secondary" onclick="runScan()" disabled>Run scan</button>
+            <button id="cancelBtn" class="secondary" onclick="cancelScan()" style="display: none;">Cancel</button>
         </div>
-        <div id="status"></div>
+        <div id="status">
+            <span class="spinner" id="statusSpinner" style="display: none;"></span>
+            <span id="statusText"></span>
+        </div>
 
         <div id="results">
             <div class="meta" id="metaLine"></div>
@@ -266,7 +315,7 @@ def get_index_html() -> str:
 <html>
 <head>
 <meta charset="utf-8">
-<title>Burghley Scan</title>
+<title>Burghley Scan - Preview</title>
 <style>{_STYLE}</style>
 </head>
 <body>
